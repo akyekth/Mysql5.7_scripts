@@ -1,0 +1,5 @@
+Copy tables from one database to other database
+============================================================
+
+CREATE TABLE newdb.mynewtable LIKE olddb.myoldtable;
+INSERT newdb.mynewtable SELECT * FROM olddb.myoldtable;

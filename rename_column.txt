@@ -1,0 +1,5 @@
+Rename column in table
+
+ ALTER TABLE tweet change COLUMN `year` `week_of_year` int(5);
+ 
+ Would you be able to match that figure?”

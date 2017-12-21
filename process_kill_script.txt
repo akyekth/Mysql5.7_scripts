@@ -1,0 +1,6 @@
+>SHOW FULL PROCESSLIST
+
+>kill id
+
+>sudo mysql service start
+>sudo mysql service stop

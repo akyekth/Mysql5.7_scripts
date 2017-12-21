@@ -1,0 +1,225 @@
+﻿
+1.Create topusers list
+
+    view name: top_user_list
+	
+	query:  create view top_user_list as 
+	            select count(tweet_id) as c , name from tweet, users  
+				where tweet.id_str = users.id_str   
+				and  text like '%l%fven%' 
+				group by users.id_str 
+				order by c desc limit 10;
+
+2.a. retweet count
+
+select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%l%fven%';
++----------+
+| count(*) |
++----------+
+|     5966 |
++----------+
+1 row in set (1.88 sec)
+
+
+
+3. total no of tweets realted to hashtag
+
+select count(tweet_id) from tweet,tweets_hashtag,hashtag where hash_id = hashtag_id and hashtag.text like '%l%fven%';
+
+select count(tweet_id) from tweet inner join tweets_hashtag using tweet_id inner join hashtag on(hash_id=hashtag_id) where hashtag.text="löfven";
+
+4. % calculate=   no of tweets per hashtag/ no of tweets particular period.
+
+
+mysql> select count(tweet_id) from (select tweet_id,created_at as c from tweet where text like '%j%mst%lldhet%') as a;
++-----------------+
+| count(tweet_id) |
++-----------------+
+|            1873 |
+
+select count(distinct tweet.tweet_id) from tweet where created_at between '2016-01-01 18:05:49' and '2016-12-31 13:38:55';
++--------------------------------+
+| count(distinct tweet.tweet_id) |
++--------------------------------+
+|                         593485 |
++--------------------------------+
+mysql> select t1,t2 from
+    -> (select count(tweet_id) as t1 from tweet where text like '%j%mst%lldhet%') as a1,
+    -> (select count(tweet_id) as t2 from tweet where created_at <= (select max(created_at) from tweet where text like '%j%mst%lldhet%')
+    -> and created_at >= (select min(created_at) from tweet where text like '%j%mst%lldhet%')) as a2;
++------+--------+
+| t1   | t2     |
++------+--------+
+| 1873 | 593485 |
++------+--------+
+1 row in set (2.81 sec)
+
+select t1,t2,t1/t2 as percenatge from (select count(tweet_id) as t1 from tweet where text like '%j%mst%lldhet%') as a1, (select count(tweet_id) as t2 from tweet where created_at <= (select max(created_at) from tweet
++------+--------+------------+
+| t1   | t2     | percenatge |
++------+--------+------------+
+| 1873 | 593485 |     0.0032 |
++------+--------+------------+
+1 row in set (2.79 sec)
+
+insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio) select '%j%mst%lldhet%',t1,t2,t1/t2 as percenatge from (select count(tweet_id) as t1 from tweet where text like '%j%mst%lldhet%') as a1, (select count(tweet_id) as t2 from tweet where created_at <= (select max(created_at) from tweet where text like '%j%mst%lldhet%') and created_at >= (select min(created_at) from tweet where text like '%j%mst%lldhet%')) as a2;
+Query OK, 1 row affected (4.16 sec)
+Records: 1  Duplicates: 0  Warnings: 0
+
+mysql> select * from genderequality;
++------+----------------+--------------+---------------------+--------+
+| s_no | hashtag        | no_of_tweets | total_tweets_period | ratio  |
++------+----------------+--------------+---------------------+--------+
+|    1 | %j%mst%lldhet% |         1873 |              593485 | 0.0032 |
++------+----------------+--------------+---------------------+--------+
+1 row in set (0.00 sec)
+
+
+> insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%j%mst%lldhet%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%j%mst%lldhet%') as a1, 
+(select count(tweet_id) as t2 from 
+ tweet where created_at <= (select max(created_at) from tweet where text like '%j%mst%lldhet%') and created_at >= (select min(created_at) from tweet where text like '%j%mst%lldhet%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%j%mst%lldhet%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%j%mst%lldhet%') as a4;
+
+ 
+>8mars
+
+insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%8mars%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%8mars%') as a1, 
+(select count(tweet_id) as t2 from 
+ tweet where created_at <= (select max(created_at) from tweet where text like '%8mars%') and created_at >= (select min(created_at) from tweet where text like '%8mars%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%8mars%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%8mars%') as a4;
+ 
+ 
+ > åsa Regn%r
+ insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%sa%Regn%r%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%sa%Regn%r%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%sa%Regn%r%') and created_at <= (select max(created_at) from tweet where text like '%sa%Regn%r%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%sa%Regn%r%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%sa%Regn%r%') as a4;
+ 
+ 
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%l%neskillnader%%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%l%neskillnader%%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%l%neskillnader%%') and created_at <= (select max(created_at) from tweet where text like '%l%neskillnader%%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%l%neskillnader%%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%l%neskillnader%%') as a4;
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '% j%mst%lldhet%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '% j%mst%lldhet%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '% j%mst%lldhet%') and created_at <= (select max(created_at) from tweet where text like '% j%mst%lldhet%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '% j%mst%lldhet%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '% j%mst%lldhet%') as a4;
+ 
+>insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%diskrimin%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%diskrimin%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%diskrimin%') and created_at <= (select max(created_at) from tweet where text like '%diskrimin%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%diskrimin%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%diskrimin%') as a4;
+ 
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%trakasserier%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%trakasserier%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%trakasserier%') and created_at <= (select max(created_at) from tweet where text like '%trakasserier%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%trakasserier%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%trakasserier%') as a4;
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '%Kvinnor%',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%Kvinnor%') as a1, 
+(select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%Kvinnor%') and created_at <= (select max(created_at) from tweet where text like '%Kvinnor%')) as a2, 
+ (select max(created_at) as c2 from tweet where text like '%Kvinnor%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%Kvinnor%') as a4;
+ 
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '2---prime minster %L%fven% ',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%L%fven%') as a1, 
+ (select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%L%fven%') and created_at <= (select max(created_at) from tweet where text like '%L%fven%')) as a2,
+ (select max(created_at) as c2 from tweet where text like '%L%fven%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%L%fven%') as a4;
+ 
+ >insert into genderequality(hashtag, no_of_tweets, total_tweets_period, ratio,min_date,max_date) 
+  select '2---prime minster %trump% ',t1,t2,t1/t2 as percenatge,c1,c2 from 
+(select count(tweet_id) as t1 from tweet where text like '%trump%') as a1, 
+ (select count(tweet_id) as t2 from tweet where created_at >= (select min(created_at) from tweet where text like '%trump%') and created_at <= (select max(created_at) from tweet where text like '%trump%')) as a2,
+ (select max(created_at) as c2 from tweet where text like '%trump%') as a3, 
+ (select min(created_at) as c1 from tweet where text like '%trump%') as a4;
+ 
+ 
+ 
+ 
+mysql> select * from genderequality;
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+
+| s_no | hashtag                   | no_of_tweets | total_tweets_period | ratio  | min_date            | max_date            |
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+
+|    2 | %j%mst%lldhet%            |         1873 |              593485 | 0.0032 | 2016-01-01 18:05:49 | 2016-12-31 13:38:55 |
+|    3 | %8mars%                   |          135 |               14663 | 0.0092 | 2016-02-29 13:02:05 | 2016-03-11 12:12:37 |
+|    4 | %sa%Regn%r%               |          181 |              571458 | 0.0003 | 2016-01-09 12:07:55 | 2016-12-22 08:03:25 |
+|    5 | %l%neskillnader%%         |           24 |              555974 | 0.0000 | 2016-01-17 22:25:16 | 2016-12-22 08:56:53 |
+|    6 | % j%mst%lldhet%           |         1686 |              593485 | 0.0028 | 2016-01-01 18:05:49 | 2016-12-31 13:38:55 |
+|    7 | %diskrimin%               |          780 |              588696 | 0.0013 | 2016-01-04 17:02:47 | 2016-12-31 15:00:46 |
+|    8 | %trakasserier%            |          725 |              566353 | 0.0013 | 2016-01-05 22:08:23 | 2016-12-17 12:57:38 |
+|    9 | %Kvinnor%                 |         9964 |              594381 | 0.0168 | 2016-01-01 10:39:30 | 2016-12-31 21:18:42 |
+|   10 | %kvinna%                  |         2872 |              594344 | 0.0048 | 2016-01-01 01:02:12 | 2016-12-31 17:44:16 |
+|   11 | 2---pm: %L%fven%          |        11663 |              594506 | 0.0196 | 2016-01-01 00:59:20 | 2016-12-31 20:51:30 |
+|   12 | 2---prime minster %trump% |         4730 |              593136 | 0.0080 | 2016-01-02 16:12:27 | 2016-12-31 20:45:52 |
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+
+11 rows in set (0.00 sec)
+
+ 
+ 
+ 
+ 
+ 5.  No of retweets for subcategory of tweet:
+ 
+ >update genderequality 
+   set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%j%mst%lldhet%') 
+   where hashtag='%j%mst%lldhet%';
+ >update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%8mars%') where hashtag='%8mars%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%sa%Regn%r%') where hashtag='%sa%Regn%r%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like ' %l%neskillnader%%') where hashtag=' %l%neskillnader%%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like ' %diskrimin%') where hashtag=' %diskrimin%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%trakasserier%') where hashtag='%trakasserier%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%Kvinnor%') where hashtag='%Kvinnor%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '%kvinna%') where hashtag='%kvinna%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '2---pm: %L%fven%') where hashtag='2---pm: %L%fven%';
+>update genderequality set no_of_retweet = (select count(*) from tweet, retweet  where tweet_id = tweet_id_old and text like '2---prime minster %trump%') where hashtag='2---prime minster %trump%';
+
+mysql> select * from genderequality;
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+---------------+
+| s_no | hashtag                   | no_of_tweets | total_tweets_period | ratio  | min_date            | max_date            | no_of_retweet |
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+---------------+
+|    2 | %j%mst%lldhet%            |         1873 |              593485 | 0.0032 | 2016-01-01 18:05:49 | 2016-12-31 13:38:55 |          1639 |
+|    3 | %8mars%                   |          135 |               14663 | 0.0092 | 2016-02-29 13:02:05 | 2016-03-11 12:12:37 |            77 |
+|    4 | %sa%Regn%r%               |          181 |              571458 | 0.0003 | 2016-01-09 12:07:55 | 2016-12-22 08:03:25 |            93 |
+|    5 | %l%neskillnader%%         |           24 |              555974 | 0.0000 | 2016-01-17 22:25:16 | 2016-12-22 08:56:53 |          NULL |
+|    6 | % j%mst%lldhet%           |         1686 |              593485 | 0.0028 | 2016-01-01 18:05:49 | 2016-12-31 13:38:55 |          NULL |
+|    7 | %diskrimin%               |          780 |              588696 | 0.0013 | 2016-01-04 17:02:47 | 2016-12-31 15:00:46 |          NULL |
+|    8 | %trakasserier%            |          725 |              566353 | 0.0013 | 2016-01-05 22:08:23 | 2016-12-17 12:57:38 |           495 |
+|    9 | %Kvinnor%                 |         9964 |              594381 | 0.0168 | 2016-01-01 10:39:30 | 2016-12-31 21:18:42 |          6659 |
+|   10 | %kvinna%                  |         2872 |              594344 | 0.0048 | 2016-01-01 01:02:12 | 2016-12-31 17:44:16 |          1931 |
+|   11 | 2---pm: %L%fven%          |        11663 |              594506 | 0.0196 | 2016-01-01 00:59:20 | 2016-12-31 20:51:30 |             0 |
+|   12 | 2---prime minster %trump% |         4730 |              593136 | 0.0080 | 2016-01-02 16:12:27 | 2016-12-31 20:45:52 |             0 |
++------+---------------------------+--------------+---------------------+--------+---------------------+---------------------+---------------+
+11 rows in set (0.00 sec)
+
+
+select hashtag, no_of_retweet from genderequality as g where no_of_retweet >= (select max(no_of_retweet) from genderequality);
++-----------+---------------+
+| hashtag   | no_of_retweet |
++-----------+---------------+
+| %Kvinnor% |          6659 |
++-----------+---------------+
+1 row in set (0.00 sec)
+

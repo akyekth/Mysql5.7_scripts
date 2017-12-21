@@ -1,0 +1,55 @@
+Triggers
+==================
+
+DELIMITER //
+CREATE TRIGGER myTrigger AFTER UPDATE ON myTable
+FOR EACH ROW
+BEGIN
+ if NEW.column1 <=> OLD.column1 THEN
+--type your statements here
+END IF;
+END;//
+DELIMITER ;
+
+
+>DELIMITER //
+CREATE TRIGGER hashtag1 
+befor update ON hahstag
+FOR EACH ROW
+BEGIN
+update hashtag where set text=new.text; 
+
+
+Triggers:
+====================================
+1.create trigger friends 
+before insert on followee 
+for each row 
+begin 
+insert ignore into users set id_str = new.id_str; end;|
+
+2.create trigger followers 
+before insert on followers 
+for each row 
+begin 
+insert ignore into users set id_str = new.id_str; end;|
+
+create trigger followers 
+before insert on followers 
+for each row 
+begin 
+insert ignore into users set id_str = new.id_str; end;|
+
+create trigger friends 
+before insert on followee 
+for each row 
+begin 
+insert ignore into users set id_str = new.id_str; end;|
+
+create trigger com_membership 
+before insert on  com_membership
+for each row 
+begin 
+insert ignore into users set id_str = new.id_str; 
+end;|
+

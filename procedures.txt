@@ -1,0 +1,83 @@
+procedures
+=================================================
+Delimiter ||
+CREATE PROCEDURE virality_prediction( start_date text, hour1 int(10),threshhold int(15))
+begin 
+select copy_user_id,copy_date,original_user_id,original_date,tweet_id from re_tweet_data where tweet_id in (select tweet_id as t from ( select count(copy_user_id) as countuid,tweet_id from (select  copy_user_id,copy_date,tweet_id from re_tweet_data where copy_date >=start_date )a  where hour(copy_date) < hour1 group by tweet_id,month(copy_date),day(copy_date),hour(copy_date))b where countuid >=  threshhold);
+END 		
+
+call('2016-08-03 17:42:59',4,5)
+
+CREATE PROCEDURE ht_stats`( ht char(50), gbl char(1), sdate date, edate date)
+begin
+ set @v_sdate = IFNULL(sdate,'2015-12-31');
+ set @v_edate = IFNULL(edate,'2017-01-01');
+ SET @q= concat('select count(tweet.tweet_id), min(tweet.created_at) from tweet, hashtag, tweets_hashtag where tweet.tweet_id = tweets_hashtag.tweet_id and hashtag.hashtag_id=tweets_hashtag.hash_id and 
+ tweet.created_at >"', @v_sdate, '"  and tweet.created_at <"', @v_edate, '"  and  hashtag.text="', ht, '" group by ', gbl, ' order by ', gbl); 
+ PREPARE STMNT FROM @q;
+ EXECUTE STMNT; END
+ 
+ 
+CREATE `tweet_ht_stats`( ht char(50), gbl char(1), sdate date, edate date)
+begin 
+set @v_sdate = IFNULL(sdate,'2015-12-31'); 
+set @v_edate = IFNULL(edate,'2017-01-01'); 
+SET @q= concat('select count(tweet.tweet_id), min(tweet.created_at) from tweet, hashtag, tweets_hashtag where tweet.tweet_id = tweets_hashtag.tweet_id and hashtag.hashtag_id=tweets_hashtag.hash_id and tweet.created_at >"', @v_sdate, '"  and tweet.created_at <"', @v_edate, '"  and  hashtag.text="', ht, '" group by ', gbl, ' order by ', gbl); 
+PREPARE STMNT FROM @q; 
+EXECUTE STMNT; 
+END
+
+CREATE PROCEDURE t1(IN kw varchar(100),IN gbl varchar(1),IN sdate date,IN edate date)
+    BEGIN
+	set @v_sdate = IFNULL(sdate, '2015-12-03');
+	set @v_edtae = IFNULL(edate, '2017-01-01');
+	select count(tweet_id),min(created_at) from tweet where created_at > @v_sdate and  created_at < @v_edate and text like concat('%',kw,'%') group by gbl order by gbl;
+    END
+	
+
+
+CREATE PROCEDURE `tweet_ht_stats`( ht char(100), gbl char(1), sdate date, edate date)
+begin 
+set @v_sdate = IFNULL(sdate,'2015-12-31');
+set @v_edate = IFNULL(edate,'2017-01-01'); 
+SET @q= concat('select count(tweet.tweet_id), min(tweet.created_at) from tweet, hashtag, tweets_hashtag where tweet.tweet_id = tweets_hashtag.tweet_id and hashtag.hashtag_id=tweets_hashtag.hash_id and tweet.created_at >"', @v_sdate, '"  and tweet.created_at <"', @v_edate, '"  and  hashtag.text="', ht, '" group by ', gbl, ' order by ', gbl);
+PREPARE STMNT FROM @q;
+ EXECUTE STMNT; 
+END
+
+
+
+CREATE PROCEDURE `tweet_kw_stats`( kw char(100), gbl char(1), sdate date, edate date)
+begin 
+set @v_sdate = IFNULL(sdate,'2015-12-31');
+set @v_edate = IFNULL(edate,'2017-01-01'); 
+SET @q= concat('select count(tweet_id), min(created_at) from tweet where tweet.created_at >"', @v_sdate, '"  and tweet.created_at <"', @v_edate, '"  and  text like "%',kw,'%" group by ', gbl, ' order by ', gbl);
+PREPARE STMNT FROM @q; 
+ EXECUTE STMNT; 
+END
+
+CREATE PROCEDURE `tweet_usr_stats`( uname char(100), gbl char(1), sdate date, edate date)
+begin 
+set @v_sdate = IFNULL(sdate,'2015-12-31');
+set @v_edate = IFNULL(edate,'2017-01-01'); 
+SET @q= concat('select count(tweet.tweet_id), min(tweet.created_at) from tweet, users where users.id_str = tweet.id_str and tweet.created_at >"', @v_sdate, '"  and tweet.created_at <"', @v_edate, '"  and  users.name="', uname, '" group by ', gbl, ' order by ', gbl);
+PREPARE STMNT FROM @q;
+ EXECUTE STMNT; 
+END
+
+
+not working
+
+Delimiter $$
+CREATE PROCEDURE update_hashtag( ttext char(145), htext char(145))
+begin 
+SET @a=select min(tweet.created_at) from tweet, hashtag, tweets_hashtag where tweet.tweet_id = tweets_hashtag.tweet_id and hashtag.hashtag_id=tweets_hashtag.hash_id and tweet.text like ttext;
+SET @b=select max(tweet.created_at) from tweet, hashtag, tweets_hashtag where tweet.tweet_id = tweets_hashtag.tweet_id and hashtag.hashtag_id=tweets_hashtag.hash_id and tweet.text like ttext;
+SET @q= update hashtag set first_usage=@a,last_usage=@b where text=htext;
+PREPARE STMNT FROM @q;
+ EXECUTE STMNT; 
+END $$
+
+
+
+

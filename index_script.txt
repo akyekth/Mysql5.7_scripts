@@ -1,0 +1,16 @@
+create index :
+
+1. create index indexname(shold be same as column name) on tablename (column_name(size))
+2. alter table tablename add indexname (indexname)
+
+     alter table hashtag add index (text(140) ASC);
+
+show index from hashtag;
+
+drop index hashtag_text on hashtag;
+
+
+
+
+
+alter table user_rank add index(user_id ASC)

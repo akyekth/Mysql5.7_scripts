@@ -1,0 +1,10 @@
+
+
+
+(SELECT 'tweet_id','created_at')
+UNION 
+(SELECT tweet_id,created_at
+FROM tweet
+INTO OUTFILE '/var/lib/mysql-files/tweet_created_at.csv'
+FIELDS ENCLOSED BY '' TERMINATED BY '|' ESCAPED BY '"'
+LINES TERMINATED BY '\r\n');

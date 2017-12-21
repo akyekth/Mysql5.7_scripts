@@ -1,0 +1,5 @@
+mysql> LOAD DATA local INFILE '/media/data/sensemaking/dataset/cascades/solrIndex.csv'  INTO TABLE bubblechart  FIELDS TERMINATED BY '\t'  LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+
+
+LOAD DATA local INFILE '/media/data/sensemaking/dataset/cascades/user_rank.csv'  INTO TABLE user_rank  FIELDS TERMINATED BY '\t'  LINES TERMINATED BY '\n';

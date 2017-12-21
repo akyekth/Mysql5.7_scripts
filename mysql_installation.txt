@@ -1,0 +1,45 @@
+﻿start mysql server
+==============================
+1.service mysql status
+2. sudo service mysql start
+
+
+
+Mysql client start
+=============================
+1. mysql -u root -p   /////////// pwd: root
+
+
+
+
+
+uninstall mysql server
+=================================
+
+-- list all package versions of mysql
+dpkg -l | grep mysql
+
+https://www.linuxquestions.org/questions/linux-newbie-8/duplicate-sources-list-entry-4175556904/
+
+sudo apt-get remove --purge mysql-server mysql-client mysql-common
+sudo apt-get autoremove
+sudo apt-get autoclean
+
+install mysql 5.7
+===================================
+https://www.youtube.com/watch?v=0y2LAqkZNcA
+
+https://www.digitalocean.com/community/tutorials/how-to-install-mysql-on-ubuntu-14-04#step-2-—-configuring-mysql
+
+1. wget http://dev.mysql.com/get/mysql-apt-config_0.6.0-1_all.deb
+2. sudo dpkg -i mysql-apt-config_0.6.0-1_all.deb
+3. sudo apt-get update
+4. sudo apt-get install mysql-server
+
+
+configuring mysql server
+===============================
+
+1. mysql --intialize
+
+

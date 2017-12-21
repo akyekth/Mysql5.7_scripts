@@ -1,0 +1,19 @@
+> select user from mysql.user
+
+create user
+
+> CREATE USER 'admin'@'localhost' IDENTIFIED BY 'password';
+
+   create user 'name'@'localhost' Identified by 'name';
+   
+   
+>grant permissions
+
+GRANT SELECT ON DBNAME.* TO 'name'@'localhost';
+
+
+> execute per missions for procedure
+
+GRANT EXECUTE ON twitterSchema.* TO 'name'@'localhost' Identified by 'name';
+
+   

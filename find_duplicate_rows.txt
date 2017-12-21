@@ -1,0 +1,1 @@
+select text,count(*) c FROM hashtag GROUP BY text HAVING c > 1;
